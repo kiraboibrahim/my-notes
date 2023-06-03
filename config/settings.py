@@ -30,12 +30,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 ]
 LOCAL_APPS = [
-    'notes',
+    "accounts",
+    "notes",
 ]
 THIRD_PARTY_APPS = [
     "encrypted_model_fields",
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS
 
@@ -54,7 +58,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,12 +121,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_REDIRECT_URL = "/notes/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
+
 # django-encrypted-model-fields
 FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY")
+
+# Crispy forms
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
