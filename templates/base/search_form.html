@@ -1,0 +1,13 @@
+{% with title=request.GET.title %}
+<form class="search-form flex-grow-1" method="get" action="{% url 'notes_list_or_add' %}">
+    <div class="form-group d-flex justify-content-center">
+        <input class="form-control border-end-0 rounded-end-0 bg-light border-0 py-3" type="text" name="title"
+               required="required" placeholder="Search your notes" {% if title %} value="{{ title }}" {% endif %}>
+        <button type="submit"
+                class="btn btn-light d-flex justify-content-center align-items-center border-start-0 rounded-start-0"
+                id="search-form-submit-btn">
+            <span class="material-symbols-outlined">search</span>
+        </button>
+    </div>
+</form>
+{% endwith %}
