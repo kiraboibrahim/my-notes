@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import Note
+from .filters import NotesFilter
 
 
 class AddNoteForm(forms.ModelForm):
@@ -16,11 +17,20 @@ class AddNoteForm(forms.ModelForm):
         fields = "__all__"
         exclude = ("owner", )
         widgets = {
-            "body": forms.Textarea(attrs={"id":  "note_body"})
+            "body": forms.Textarea(attrs={"id":  "add-note-form__note-body"})
         }
 
 
-class EditNoteForm(AddNoteForm):
+class EditNoteForm(forms.ModelForm):
 
-    def save(self, commit=True):
-        return self._meta.model(**self.cleaned_data).save(commit)
+    class Meta:
+        model = Note
+        fields = "__all__"
+        exclude = ("owner", )
+        widgets = {
+            "title": forms.TextInput(attrs={"id": "edit-note-form__note-title"}),
+            "body": forms.Textarea(attrs={"id":  "edit-note-form__note-body"})
+        }
+
+
+notes_filter_form = NotesFilter().form

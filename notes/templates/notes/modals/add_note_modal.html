@@ -11,7 +11,7 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <form id="add-note-form" method="post" action="{% url 'notes_list_or_add' %}">
+                    <form id="add-note-form" method="post" action="{% url 'notes_list_or_add' %}" data-md-init="no">
                         {% csrf_token %}
                         {{ add_note_form | crispy }}
                     </form>
@@ -19,23 +19,32 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" id="add-note-form-submit-btn" class="btn btn-primary">Save</button>
+                <button type="button" id="add-note-btn" class="btn btn-primary">Save</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    let note_body_md_initialized = false;
+    let add_note_form = $("#add-note-form");
     $('#add-note-modal').on('show.bs.modal', event => {
-        let button = $(event.relatedTarget);
-        let modal = $(this);
-        if (!note_body_md_initialized) {
-         const easyMDE = new EasyMDE({element: document.getElementById('note_body')}, {autosave: true, autofocus: true});
-         note_body_md_initialized = true;
+        const add_note_form_initialized = add_note_form.attr("data-md-init") === "yes";
+        if (!add_note_form_initialized) {
+            const easy_mde_opts = {
+                element: document.getElementById('add-note-form__note-body'),
+                autosave: {
+                    enabled: true,
+                    uniqueId: "AddNoteForm"
+                },
+                autoRefresh: {delay: 300},
+                autofocus: true,
+                placeholder: "Everyday is a day to improve yourself"
+            };
+         const easy_mde = new EasyMDE(easy_mde_opts);
+         add_note_form.attr("data-md-init", "yes")
         }
     });
-    $("#add-note-form-submit-btn").click(e => $("#add-note-form").submit());
+    $("#add-note-btn").click(e => add_note_form.submit());
 </script>
 {% if add_note_form.errors %}
     <script>

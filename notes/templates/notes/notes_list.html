@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{%  load crispy_forms_tags %}
 {% load static %}
 {% load humanize %}
 
@@ -11,15 +12,22 @@
 
 {% block content %}
     {% include "notes/modals/add_note_modal.html" %}
+    {% include "notes/modals/edit_note_modal.html" %}
+    {% include "notes/modals/delete_note_confirm_modal.html" %}
+
     <div class="notes masonry my-3">
         {% for note in notes %}
             <div class="masonry-brick">
-                <div class="card border mb-3 note masonry-content" style="max-width: 20rem;">
+                <div class="card border mb-3 note masonry-content" style="max-width: 20rem;" data-note-title="{{ note.title }}" data-note-body="{{ note.body }}" data-note-slug="{{ note.slug }}">
                     <div class="card-header d-flex align-items-center">
                         <span class="me-auto">{{ note.title }}</span>
                         <div class="note__actions">
-                            <a href="{% url 'note_delete' slug=note.slug %}"><span class="material-symbols-outlined text-danger p-1">delete</span></a>
-                            <a href="{% url 'note_edit' slug=note.slug %}"><span class="material-symbols-outlined text-primary p-1">edit_note</span></a>
+                            <a class="btn p-0" href="{% url 'note_delete' slug=note.slug %}" data-bs-toggle="modal" data-bs-target="#delete-note-confirm-modal">
+                                <span class="material-symbols-outlined text-danger p-1">delete</span>
+                            </a>
+                            <a class="btn p-0" href="{% url 'note_edit' slug=note.slug %}" data-bs-toggle="modal" data-bs-target="#edit-note-modal">
+                                <span class="material-symbols-outlined text-primary p-1">edit_note</span>
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">

@@ -1,0 +1,74 @@
+{% load crispy_forms_tags %}
+
+<div class="modal fade" id="edit-note-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-md-down" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Make your notes better...</h4>
+                <button type="button" class="btn btn-light close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form id="edit-note-form" method="post" action="{% url 'note_edit' slug='slug-placeholder' %}"
+                          data-md-init="no">
+                        {% csrf_token %}
+                        {{ edit_note_form | crispy }}
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="save-note-btn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let easy_mde = null;
+    let edit_note_form = $("#edit-note-form");
+    let note_title_input = $("#edit-note-form__note-title");
+
+    $('#edit-note-modal').on('show.bs.modal', event => {
+        let note = $(event.relatedTarget).parents(".note"); // Clicked note
+        const note_title = note.attr("data-note-title"); // Get its title
+        const note_body = note.attr("data-note-body"); // Get its body
+        const note_slug =note.attr("data-note-slug"); // Get its slug
+        initialize_edit_note_form(note_title, note_body, note_slug); // Initialize the edit form with the note_title and note_body
+    });
+
+    let initialize_edit_note_form = (note_title, note_body, note_slug) => {
+        let edit_note_form_action = edit_note_form.attr("action");
+        note_title_input.val(note_title);
+        cleanup_easy_mde();
+        const easy_mde_opts = {
+            element: document.getElementById('edit-note-form__note-body'),
+            autofocus: true,
+            initialValue: note_body,
+            autoRefresh: {delay: 300},
+            placeholder: "Everyday is a day to improve yourself"
+        };
+        easy_mde = new EasyMDE(easy_mde_opts);
+
+        let [base, , action] = edit_note_form_action.replace("/", "").split("/");
+        edit_note_form_action = `/${base}/${note_slug}/${action}`;
+        edit_note_form.attr("action", edit_note_form_action);
+    }
+
+    let cleanup_easy_mde = () => {
+        if(easy_mde != null) {
+            easy_mde.toTextArea();
+            easy_mde = null;
+        }
+    }
+    $("#save-note-btn").click(e => edit_note_form.submit()); // Submit form when save button in the modal has been clicked
+</script>
+
+{% if edit_note_form.errors %}
+    <script>
+        let edit_note_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("edit-note-modal"));
+        edit_note_modal.show();
+    </script>
+{% endif %}

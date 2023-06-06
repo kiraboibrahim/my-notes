@@ -7,14 +7,16 @@ from django.contrib import messages
 from django_filters.views import FilterView
 
 from .models import Note
-from .forms import AddNoteForm
+from .forms import AddNoteForm, EditNoteForm, notes_filter_form
 from .filters import NotesFilter
 
 
 class NoteListOrAddView(SuccessMessageMixin, FilterView):
+    model = Note
     template_name = "notes/notes_list.html"
     extra_context = {
-        "add_note_form": AddNoteForm()
+        "add_note_form": AddNoteForm(),
+        "edit_note_form": EditNoteForm,
     }
     context_object_name = "notes"
     http_method_names = ["get", "post"]
@@ -33,14 +35,22 @@ class NoteListOrAddView(SuccessMessageMixin, FilterView):
 
 class NoteEditView(SuccessMessageMixin, UpdateView):
     model = Note
+    form_class = EditNoteForm
     template_name = "notes/notes_list.html"
     extra_context = {
-        "add_note_form": AddNoteForm()
+        "add_note_form": AddNoteForm(),
+        "edit_note_form": EditNoteForm(),
     }
     success_message = "Your note has been updated"
 
+    def form_invalid(self, form):
+        notes = self.get_queryset().for_user(self.request.user)
+        context = self.get_context_data()
+        context.update({"edit_note_form": form, "notes": notes})
+        return self.render_to_response(context)
+
     def get_success_url(self):
-        return reverse("note_detail", args=(self.object.slug, ))
+        return reverse("notes_list_or_add")
 
     def get(self, request, **kwargs):
         return redirect(reverse("notes_list_or_add"))
@@ -48,5 +58,13 @@ class NoteEditView(SuccessMessageMixin, UpdateView):
 
 class NoteDeleteView(SuccessMessageMixin, DeleteView):
     model = Note
-    success_url = reverse_lazy("notes_list")
+    http_method_names = ["get"]
+    success_url = reverse_lazy("notes_list_or_add")
     success_message = "Your note has been deleted"
+
+    def get(self, request, *args, **kwargs):
+        # Don't redirect to delete confirmation page, Confirmation already handled by the frontend, Just immediately
+        # delete note
+        response = self.delete(request, *args, **kwargs)
+        messages.success(request, self.get_success_message({}))
+        return response
