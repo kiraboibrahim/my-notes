@@ -14,7 +14,6 @@ class NotesFilter(django_filters.FilterSet):
     class Meta:
         model = Note
         fields = {
-            "title": ["icontains"],
             "created_at": ["lt", "gt"],
             "updated_at": ["lt", "gt"]
         }
