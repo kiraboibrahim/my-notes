@@ -17,7 +17,7 @@ class NotesQueryset(models.query.QuerySet):
 
 class Note(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(editable=False, max_length=50)
+    slug = models.SlugField(editable=False, max_length=50, unique=True)
     body = EncryptedTextField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notes")
     created_at = models.DateTimeField(auto_now_add=True)
