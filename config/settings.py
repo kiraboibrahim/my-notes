@@ -130,7 +130,7 @@ STATIC_ROOT = BASE_DIR / "static"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = "/notes/"
-LOGOUT_REDIRECT_URL = "/accounts/login/"
+LOGOUT_REDIRECT_URL = "/accounts/signin/"
 
 # django-encrypted-model-fields
 FIELD_ENCRYPTION_KEY = env("FIELD_ENCRYPTION_KEY")
