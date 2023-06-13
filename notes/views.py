@@ -1,17 +1,19 @@
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
+from django.contrib import messages
 from django.views.generic.edit import UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django_filters.views import FilterView
 
 from .models import Note
-from .forms import AddNoteForm, EditNoteForm, notes_filter_form
+from .forms import AddNoteForm, EditNoteForm
 from .filters import NotesFilter
+from .mixins import NoteOwnerRequiredMixin
 
 
-class NoteListOrAddView(SuccessMessageMixin, FilterView):
+class NoteListOrAddView(LoginRequiredMixin, SuccessMessageMixin, FilterView):
     model = Note
     template_name = "notes/notes_list.html"
     extra_context = {
@@ -33,7 +35,7 @@ class NoteListOrAddView(SuccessMessageMixin, FilterView):
         return self.render_to_response(self.get_context_data(note=note, add_note_form=add_note_form))
 
 
-class NoteEditView(SuccessMessageMixin, UpdateView):
+class NoteEditView(LoginRequiredMixin, NoteOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Note
     form_class = EditNoteForm
     template_name = "notes/notes_list.html"
@@ -56,7 +58,7 @@ class NoteEditView(SuccessMessageMixin, UpdateView):
         return redirect(reverse("notes_list_or_add"))
 
 
-class NoteDeleteView(SuccessMessageMixin, DeleteView):
+class NoteDeleteView(LoginRequiredMixin, NoteOwnerRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Note
     http_method_names = ["get"]
     success_url = reverse_lazy("notes_list_or_add")
