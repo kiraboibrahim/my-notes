@@ -18,9 +18,9 @@
     <div class="notes masonry my-3">
         {% for note in notes %}
             <div class="masonry-brick">
-                <div class="card border mb-3 note masonry-content" style="max-width: 20rem;" data-note-title="{{ note.title }}" data-note-body="{{ note.body }}" data-note-slug="{{ note.slug }}">
+                <div class="card border mb-3 note masonry-content" style="max-width: 25rem;" data-note-title="{{ note.title }}" data-note-body="{{ note.body }}" data-note-slug="{{ note.slug }}">
                     <div class="card-header d-flex align-items-center">
-                        <span class="me-auto">{{ note.title }}</span>
+                        <span class="me-auto d-inline-block text-truncate">{{ note.title }}</span>
                         <div class="note__actions">
                             <a class="btn p-0" href="{% url 'note_delete' slug=note.slug %}" data-bs-toggle="modal" data-bs-target="#delete-note-confirm-modal">
                                 <span class="material-symbols-outlined text-danger p-1">delete</span>
