@@ -34,6 +34,9 @@ class NoteListOrAddView(LoginRequiredMixin, SuccessMessageMixin, FilterView):
             messages.success(self.request, self.get_success_message(add_note_form.cleaned_data))
         return self.render_to_response(self.get_context_data(note=note, add_note_form=add_note_form))
 
+    def get_queryset(self):
+        return super().get_queryset().for_user(self.request.user)
+
 
 class NoteEditView(LoginRequiredMixin, NoteOwnerRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Note
